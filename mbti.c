@@ -6,19 +6,26 @@
 
 #define MAX_PERSONS 100
 #define MAX_LINE_LENGTH 1024
-
+#define K 5
 
 typedef struct {
     char name[50];
     double cognitive_fn[8];
-    char type[10];
-    double distance;
+    char type[5];
+    
 } Person;
 
-double calculate_distance(Person a, Person b){
+typedef struct 
+{
+    int index;
+    double dist;
+} Neighbor;
+
+
+double calculate_distance(double a[], double b[]){
     double sum_of_diff_sqr;
     for(int i=0;i<8;i++){
-        sum_of_diff_sqr += pow(a.cognitive_fn[i]-b.cognitive_fn[i],2);
+        sum_of_diff_sqr += pow(a[i]-b[i],2);
     }
     return sqrt(sum_of_diff_sqr);
 }
@@ -43,28 +50,27 @@ int main() {
         }
     }
     fclose(file);
-    Person query;
-    strcpy(query.name,"Query");
-    for(int i=0;i<8;i++){
-        scanf("%lf",&query.cognitive_fn[i]);
+    double query[8] = {32,32,27,36,29,31,28,23};
+    char predicted_mbti[5];
+    
+    Neighbor neighbors[K];
+    for(int i=0;i<K ; i++) { 
+        neighbors[i].dist = DBL_MAX;
+        neighbors[i].index = -1; 
     }
-    Person neighbors[3];
-    for(int i=0;i<3 ; i++) { neighbors[i].distance = DBL_MAX; }
-    for(int i=0;i<cnt;i++){
-        dataset[i].distance = calculate_distance(dataset[i], query);
-        double d = dataset[i].distance;
-        if(d < neighbors[0].distance){
-            neighbors[2] = neighbors[1];
-            neighbors[1] = neighbors[0];
-            neighbors[0] = dataset[i];
-        }else if(d < neighbors[1].distance){
-            neighbors[2] = neighbors[1];
-            neighbors[1] = dataset[i];
-        }else if(d < neighbors[2].distance){
-            neighbors[3] = dataset[i];
+    
+    for(int i=0; i<cnt;i++){
+        double d = calculate_distance(query, dataset[i].cognitive_fn);
+        if(d < neighbors[K-1].dist){
+            int pos = K-1;
+            while(pos > 0 && d < neighbors[pos-1].dist){
+                neighbors[pos].dist = neighbors[pos-1].dist;
+                pos--;
+            }
+            neighbors[pos].dist = d;
+            neighbors[pos].index = i;
         }
     }
-
     for(int p=0;p<4;p++){
         int cnt_a = 0, cnt_b = 0;
         char ch_a,ch_b;
@@ -72,17 +78,18 @@ int main() {
         else if(p==1) {ch_a = 'N'; ch_b = 'S';}
         else if(p==2) {ch_a = 'T'; ch_b = 'F';}
         else {ch_a = 'J'; ch_b = 'P';}
-        for(int i=0;i<3;i++){
-            if(neighbors[i].type[p] == ch_a) cnt_a++;
-            else if(neighbors[i].type[p] == ch_b) cnt_b++;
+        for(int i=0;i<K;i++){
+            int id = neighbors[i].index;
+            if(dataset[id].type[p] == ch_a) cnt_a++;
+            else if(dataset[id].type[p] == ch_b) cnt_b++;
         }
         if(cnt_a >= cnt_b){
-            query.type[p] = ch_a;
+            predicted_mbti[p] = ch_a;
         }else{
-            query.type[p] = ch_b;
+            predicted_mbti[p] = ch_b;
         }
     }
-    printf("Predicted MBTI: %s\n",query.type);
+    printf("Predicted MBTI: %s\n",predicted_mbti);
 
     return 0;
 }
