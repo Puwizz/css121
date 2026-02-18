@@ -82,7 +82,7 @@ int main() {
     
     
     for(int p=0;p<4;p++){
-        float cnt_a = 0.0, cnt_b = 0.0;
+        double cnt_a = 0.0, cnt_b = 0.0;
         char ch_a,ch_b;
         if(p==0) {ch_a = 'I'; ch_b = 'E';}
         else if(p==1) {ch_a = 'N'; ch_b = 'S';}
