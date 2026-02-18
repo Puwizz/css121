@@ -16,7 +16,7 @@ typedef struct {
 } Person;
 
 double calculate_distance(double a[], double b[]){
-    double sum_of_diff_sqr;
+    double sum_of_diff_sqr = 0.0;
     for(int i=0;i<8;i++){
         sum_of_diff_sqr += pow(a[i]-b[i],2);
     }
@@ -66,7 +66,7 @@ int main() {
     char predicted_mbti[5];
     
     while (fgets(line, MAX_LINE_LENGTH, file)) {
-        int items = sscanf(line, "%[^,],%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%[^,]",
+        int items = sscanf(line, "%50[^,],%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%[^,]",
                dataset[cnt].name,
                &dataset[cnt].cognitive_fn[0], &dataset[cnt].cognitive_fn[1], &dataset[cnt].cognitive_fn[2], &dataset[cnt].cognitive_fn[3],
                &dataset[cnt].cognitive_fn[4], &dataset[cnt].cognitive_fn[5], &dataset[cnt].cognitive_fn[6], &dataset[cnt].cognitive_fn[7],
@@ -82,7 +82,7 @@ int main() {
     
     
     for(int p=0;p<4;p++){
-        int cnt_a = 0, cnt_b = 0;
+        float cnt_a = 0.0, cnt_b = 0.0;
         char ch_a,ch_b;
         if(p==0) {ch_a = 'I'; ch_b = 'E';}
         else if(p==1) {ch_a = 'N'; ch_b = 'S';}
@@ -99,6 +99,7 @@ int main() {
             predicted_mbti[p] = ch_b;
         }
     }
+    predicted_mbti[4] = '\0';
     printf("Predicted MBTI: %s\n",predicted_mbti);
     printf("%d",cnt);
 
