@@ -6,10 +6,12 @@
 
 #define MAX_PERSONS 100
 #define MAX_LINE_LENGTH 1024
-#define K 5
+// #define K 5
 
 typedef struct {
-    char name[50];
+    char id[12];
+    char name[40];
+    char sex[7];
     double cognitive_fn[8];
     char type[5];
     double dist;
@@ -55,32 +57,53 @@ void quick_select(Person *arr, int left, int right, int k){
     }
 }
 int main() {
+    srand(time(NULL));
     Person dataset[MAX_PERSONS];
     int cnt = 0;
-
-    FILE *file = fopen("Mbti.txt", "r");
+    int k = 0;
+    FILE *file = fopen("CSS121_MBTI_2026_68.txt", "r");
     if (!file) { printf("Error opening file.\n"); return 1; }
 
     char line[MAX_LINE_LENGTH];
-    double query[8] = {32,32,27,36,29,31,28,23};
+    double query[8];
+    char target_id[] = "68090500420";
+    int found_query = 0;
     char predicted_mbti[5];
-    
-    while (fgets(line, MAX_LINE_LENGTH, file)) {
-        int items = sscanf(line, "%50[^,],%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%[^,]",
-               dataset[cnt].name,
-               &dataset[cnt].cognitive_fn[0], &dataset[cnt].cognitive_fn[1], &dataset[cnt].cognitive_fn[2], &dataset[cnt].cognitive_fn[3],
-               &dataset[cnt].cognitive_fn[4], &dataset[cnt].cognitive_fn[5], &dataset[cnt].cognitive_fn[6], &dataset[cnt].cognitive_fn[7],
-               dataset[cnt].type);
-        double d = calculate_distance(query, dataset[cnt].cognitive_fn);
-        dataset[cnt].dist = d;
-        
+    fgets(line, MAX_LINE_LENGTH, file);
+    while (cnt < MAX_PERSONS && fgets(line, MAX_LINE_LENGTH, file)) {
+        Person temp;
+        int items = sscanf(line, "%s\t%[^\t]\t%s\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%s",
+                   temp.id, temp.name, temp.sex,
+                   &temp.cognitive_fn[0], &temp.cognitive_fn[1], &temp.cognitive_fn[2], &temp.cognitive_fn[3],
+                   &temp.cognitive_fn[4], &temp.cognitive_fn[5], &temp.cognitive_fn[6], &temp.cognitive_fn[7],
+                   temp.type);
+        if (items < 12 ) {
+            continue;
+        }
+        if(strcmp(temp.id, target_id) == 0){
+            for(int i=0; i<8; i++) query[i] = temp.cognitive_fn[i];
+            found_query = 1;
+            continue;
+        }
+        dataset[cnt] = temp;
         cnt++;
     }
     fclose(file);
-    
-    quick_select(dataset, 0, cnt - 1, K - 1);
-    
-    
+    if (!found_query) {
+        printf("Target ID not found in file!\n");
+    return 1;
+    }
+    for(int i=0; i<cnt; i++) {
+        dataset[i].dist = calculate_distance(query, dataset[i].cognitive_fn);
+    }
+    for(int i=0;i<cnt;i++){
+        printf("%s\n",dataset[i].name);
+    }
+    printf("Enter k : ");
+    scanf("%d",&k);
+    quick_select(dataset, 0, cnt - 1, k - 1);
+
+
     for(int p=0;p<4;p++){
         double cnt_a = 0.0, cnt_b = 0.0;
         char ch_a,ch_b;
@@ -88,7 +111,7 @@ int main() {
         else if(p==1) {ch_a = 'N'; ch_b = 'S';}
         else if(p==2) {ch_a = 'T'; ch_b = 'F';}
         else {ch_a = 'J'; ch_b = 'P';}
-        for(int i=0;i<K;i++){
+        for(int i=0;i<k;i++){
             double w = 1.0 / (dataset[i].dist + 0.00001);
             if(dataset[i].type[p] == ch_a) cnt_a += w;
             else cnt_b += w;
@@ -101,7 +124,7 @@ int main() {
     }
     predicted_mbti[4] = '\0';
     printf("Predicted MBTI: %s\n",predicted_mbti);
-    printf("%d",cnt);
+
 
     return 0;
 }
