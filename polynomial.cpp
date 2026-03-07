@@ -62,6 +62,9 @@ public:
         Polynomial* result = new Polynomial();
         Node* p1 = poly1.head;
         Node* p2 = poly2.head;
+        
+     
+        Node* tail = nullptr;
 
         while (p1 != nullptr || p2 != nullptr) {
             int c, p;
@@ -79,28 +82,77 @@ public:
                 p1 = p1->next;
                 p2 = p2->next;
             }
-            result->insertTerm(c, p);
+            
+            
+            if (c != 0) {
+                Node* newNode = new Node(c, p);
+                if (result->head == nullptr) {
+                    result->head = newNode;
+                    tail = newNode;
+                } else {
+                    tail->next = newNode;
+                    tail = newNode; 
+                }
+            }
         }
         return result;
     }
-    static Polynomial* multipy(const Polynomial& poly1, const Polynomial& poly2){
+    static Polynomial* multiply(const Polynomial& poly1, const Polynomial& poly2) {
         Polynomial* finalResult = new Polynomial();
+        if (!poly1.head || !poly2.head) return finalResult; 
+
         Node* p1 = poly1.head;
-        while(p1 != nullptr){
-            Polynomial tempPoly;
+        while (p1 != nullptr) {
             Node* p2 = poly2.head;
-            while(p2 != nullptr)
-            {
-                int c = p1->coeff * p2->coeff;
+            
+            Node* cur = finalResult->head;
+            Node* prev = nullptr;
+
+            while (p2 != nullptr) {
                 int p = p1->pow + p2->pow;
-                tempPoly.insertTerm(c,p);
+                int c = p1->coeff * p2->coeff;
+
+    
+                while (cur != nullptr && cur->pow > p) {
+                    prev = cur;
+                    cur = cur->next;
+                }
+
+                if (cur != nullptr && cur->pow == p) {
+                    cur->coeff += c;
+                    if (cur->coeff == 0) { 
+                        Node* temp = cur;
+                        cur = cur->next; 
+                        
+                        if (prev == nullptr) finalResult->head = cur;
+                        else prev->next = cur;
+                        
+                        delete temp; 
+                    } else {
+                        
+                        prev = cur;
+                        cur = cur->next;
+                    }
+                } else {
+            
+                    Node* newNode = new Node(c, p);
+                    newNode->next = cur;
+                    
+                    if (prev == nullptr) {
+                        finalResult->head = newNode;
+                    } else {
+                        prev->next = newNode;
+                    }
+                    
+             
+                    prev = newNode;
+                }
+                
                 p2 = p2->next;
             }
-            Polynomial* oldResult = finalResult;
-            finalResult = Polynomial::add(*oldResult, tempPoly);
-            delete oldResult;
             p1 = p1->next;
         }
+
         return finalResult;
     }
     void print() const {
@@ -155,7 +207,7 @@ int main() {
     sum->print();
 
     delete sum;
-    Polynomial* Product = Polynomial::multipy(p1, p2);
+    Polynomial* Product = Polynomial::multiply(p1, p2);
     cout << "Product: ";
     Product->print();
     return 0;
