@@ -123,6 +123,15 @@ int main() {
         }
     }
     predicted_mbti[4] = '\0';
+    printf("\n=== %d Nearest Neighbors Found ===\n", k);
+    printf("%-15s | %-25s | %-10s | %-10s\n", "Student ID", "Name", "Distance", "MBTI");
+    printf("--------------------------------------------------------------------------\n");
+    for (int i = 0; i < k; i++) {
+        printf("%-15s | %-25s | %-10.4f | %-10s\n", 
+               dataset[i].id, dataset[i].name, dataset[i].dist, dataset[i].type);
+    }
+    printf("--------------------------------------------------------------------------\n");
+
     printf("Predicted MBTI: %s\n",predicted_mbti);
 
 
