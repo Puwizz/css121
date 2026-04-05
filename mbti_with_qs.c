@@ -69,9 +69,12 @@ int main() {
 
     char line[MAX_LINE_LENGTH];
     double query[8];
-    char target_id[] = "68090500420";
+    char target_id[12];
     int found_query = 0;
     char predicted_mbti[5];
+
+    printf("Enter your student id : ");
+    fgets(target_id, sizeof(target_id), stdin);
 
     fgets(line, MAX_LINE_LENGTH, file);
     while (cnt < MAX_PERSONS && fgets(line, MAX_LINE_LENGTH, file)) {
@@ -111,10 +114,10 @@ int main() {
     quick_select(dataset, 0, cnt - 1, k - 1);
 
     printf("\n=== %d Nearest Neighbors Found ===\n", k);
-    printf("%-15s | %-25s | %-10s | %-10s\n", "Student ID", "Name", "Distance", "MBTI");
+    printf("%-15s | %-40s | %-10s | %-10s\n", "Student ID", "Name", "Distance", "MBTI");
     printf("--------------------------------------------------------------------------\n");
     for (int i = 0; i < k; i++) {
-        printf("%-15s | %-25s | %-10.4f | %-10s\n", 
+        printf("%-15s | %-40s | %-10.4f | %-10s\n", 
                dataset[i].id, dataset[i].name, dataset[i].dist, dataset[i].type);
     }
     printf("--------------------------------------------------------------------------\n");
