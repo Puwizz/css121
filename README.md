@@ -1,6 +1,6 @@
 # 🚀 CSS121: Data Structures & Algorithms Lab Assignments
 
-This repository contains a collection of programming assignments for the **CSS121 (Data Structures)** course at King Mongkut's University of Technology Thonburi (KMUTT). The focus of these labs is on implementing fundamental data structures and efficient algorithms using C and C++.
+This repository contains a collection of programming assignments for the **CSS121 (Data Structures & Algorithm)** course at King Mongkut's University of Technology Thonburi (KMUTT). The focus of these labs is on implementing fundamental data structures and efficient algorithms using C and C++.
 
 ## 📂 Project Overview
 
